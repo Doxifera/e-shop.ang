@@ -1,7 +1,9 @@
 import {Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
+import {NavigationEnd, Router} from "@angular/router";
 import {CategoryService} from "../../services/category/category.service";
 import {filter} from "rxjs/internal/operators";
+import {BasketService} from "../../services/basket/basket.service";
+import {FlashService} from "../../services/flash/flash.service";
 
 
 @Component({
@@ -11,11 +13,22 @@ import {filter} from "rxjs/internal/operators";
 })
 export class MainComponent implements OnInit, OnDestroy{
   categoriesArray = null;
-  basketOpen = false;
+  basketOpen = null;
   menu = false;
   scrollBound = null;
+  openBasket = null;
+  flashMessage = null;
+  flashContainer = null;
 
-  constructor(private router: Router, private elRef: ElementRef, private categories: CategoryService) {
+  constructor(private router: Router, private elRef: ElementRef, private categories: CategoryService,
+              private basketService: BasketService, private flashService: FlashService) {
+    this.flashMessage = flashService.flashMessage.subscribe(msg => {
+      this.flashContainer = msg;
+      setTimeout(()=>{this.flashContainer = null}, 1000);
+    });
+    this.openBasket = basketService.bayed.subscribe(e => {
+      this.basketOpen = e;
+    });
     categories.all("").subscribe(e => {
       this.categoriesArray = e['category']['data']
     });
@@ -25,13 +38,27 @@ export class MainComponent implements OnInit, OnDestroy{
         filter(e => e instanceof NavigationEnd)
       )
       .subscribe( (navEnd:NavigationEnd) => {
-        if(navEnd.urlAfterRedirects !== "/" ){
+        if(navEnd.urlAfterRedirects !== "/" && navEnd.urlAfterRedirects.search(/comparing/) < 1 ){
           if (!this.scrollBound) {
             this.scrollBound = this.scrollHandler.bind(this);
           }
           window.addEventListener('scroll',this.scrollBound);
         }
         else{
+          let header = this.elRef.nativeElement.querySelector('.header');
+          let strong = this.elRef.nativeElement.querySelector('strong');
+          let first = this.elRef.nativeElement.querySelector('.first');
+          let logo = this.elRef.nativeElement.querySelector('.logo');
+          strong.style.display = "";
+          first.style.border = "";
+          logo.style.display = "";
+          header.style.position = "";
+          header.style.width = "";
+          header.style.maxWidth = "1";
+          header.style.top = "";
+          header.style.left = "";
+          header.style.transform = "";
+          header.style.zIndex = "";
           window.removeEventListener('scroll',this.scrollBound);
         }
       });
@@ -43,30 +70,44 @@ export class MainComponent implements OnInit, OnDestroy{
   scrollHandler(){
       let page = window.pageYOffset || document.documentElement.scrollTop;
       let header = this.elRef.nativeElement.querySelector('.header');
+      let headerHidden = this.elRef.nativeElement.querySelector('.headerHidden');
       let block = this.elRef.nativeElement.querySelector('.block');
-      if( header.getBoundingClientRect().bottom < 0){
-        header.style.position = "fixed";
-        header.style.backgroundColor = "#c7dcde";
-        header.style.top = "0";
-        header.style.left = "0";
-        header.style.right = "0";
-        header.style.zIndex = "1000";
-        block.style.margin = "auto";
-        block.style.maxWidth = "1024px";
-      }
-      if(page < 50){
-        header.style.position = "";
-        header.style.width = "";
-        header.style.maxWidth = "1";
-        header.style.top = "";
-        header.style.left = "";
-        header.style.transform = "";
-        header.style.zIndex = "";
-      }
+      let strong = this.elRef.nativeElement.querySelector('strong');
+      let first = this.elRef.nativeElement.querySelector('.first');
+      let logo = this.elRef.nativeElement.querySelector('.logo');
+        if( header.getBoundingClientRect().bottom < 0){
+          headerHidden.style.display = "block";
+          headerHidden.style.height = header.clientHeight + "px";
+          header.style.position = "fixed";
+          header.style.backgroundColor = "#c7dcde";
+          header.style.top = "0";
+          header.style.left = "0";
+          header.style.right = "0";
+          header.style.zIndex = "1000";
+          block.style.margin = "auto";
+          block.style.maxWidth = "1024px";
+          strong.style.display = "none";
+          first.style.border = "1px solid #45acc8";
+          logo.style.display = "block";
+        }
+        if(page < 90){
+          headerHidden.style.display = "none";
+          header.style.position = "";
+          header.style.width = "";
+          header.style.maxWidth = "1";
+          header.style.top = "";
+          header.style.left = "";
+          header.style.transform = "";
+          header.style.zIndex = "";
+          strong.style.display = "";
+          first.style.border = "";
+          logo.style.display = "";
+        }
   }
 
   ngOnDestroy(): void {
     window.removeEventListener('scroll',this.scrollBound);
+    this.openBasket.unsubscribe();
   }
 
 }

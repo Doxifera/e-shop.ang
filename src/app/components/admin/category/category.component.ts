@@ -1,9 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import {CategoryService} from "../../../services/category/category.service";
-import {AuthService} from "../../../services/auth/auth.service";
-import {AdminService} from "../../../services/admin/admin.service";
-import {Subject, timer} from "rxjs/index";
-import {debounce} from "rxjs/internal/operators";
 import {ActivatedRoute, Params} from "@angular/router";
 
 @Component({
@@ -96,40 +92,5 @@ export class CategoryComponent implements OnInit {
       }
     })
   }
-
-
-  // search = new Subject();
-  //
-  // onSearch(value){
-  //   this.search.next(value)
-  // }
-  //
-  // consoleSearch = this.search.pipe(debounce( ()=> timer(1000) )).subscribe(e => {
-  //   this.categories.all().subscribe(e => {
-  //     console.log(e);
-  //   })
-  // });
-
-  // onSearch(value){
-  //
-  //   this.debounce(function() {},console.log(value), 1000);
-  // }
-  //
-  // myEfficientFn = this.debounce(function() {},console.log("op op"), 1000);
-  //
-  // debounce(func, wait, immediate) {
-  //   var timeout;
-  //   return function() {
-  //     var context = this, args = arguments;
-  //     var later = function() {
-  //       timeout = null;
-  //       if (!immediate) func.apply(context, args);
-  //     };
-  //     var callNow = immediate && !timeout;
-  //     clearTimeout(timeout);
-  //     timeout = setTimeout(later, wait);
-  //     if (callNow) func.apply(context, args);
-  //   };
-  // };
 
 }

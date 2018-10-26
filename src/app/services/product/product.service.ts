@@ -59,5 +59,13 @@ export class ProductService {
     };
     return this.http.post(environment.apiUrl + 'product/update', product, {headers})
   }
+
+  public search(value,paginate){
+    const headers = {
+      'Content-Type':'application/x-www-form-urlencoded'
+    };
+    return this.http.get(environment.apiUrl + 'product/search/' + value + paginate ,{headers})
+  }
+
 }
 

@@ -1,5 +1,6 @@
 import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
 import {BasketService} from "../../services/basket/basket.service";
+import {DomSanitizer} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-basket',
@@ -8,12 +9,11 @@ import {BasketService} from "../../services/basket/basket.service";
 })
 export class BasketComponent implements OnInit, OnDestroy {
   @Output('close') close = new EventEmitter<boolean>();
-  basket = null;
 
-  constructor(private basketService: BasketService) {
-    this.basket = basketService.basket.subscribe(e => {
-      console.log(e);
-    })
+  basketArray = null;
+
+  constructor(private basketService: BasketService, private sanitizer: DomSanitizer) {
+    this.basketArray = basketService.getProducts();
   }
 
   ngOnInit() {
@@ -21,9 +21,48 @@ export class BasketComponent implements OnInit, OnDestroy {
 
   closeWindow() {
     this.close.emit(true);
+    this.basketService.bayed.next(false);
   }
 
   ngOnDestroy(): void {
-    this.basket.unsubscribe();
+    this.basketService.setProduct(this.basketArray);
   }
+
+  makeUrl(url){
+    return this.sanitizer.bypassSecurityTrustStyle('url(' + url + ')');
+  }
+
+  orderAmount(){
+    let sum = 0;
+    if(this.basketArray && this.basketArray.length > 0){
+      this.basketArray.forEach(elem => {
+        sum += elem.amount;
+      })
+    }
+    return sum;
+  }
+
+  orderPrice(){
+    let sum = 0;
+    if(this.basketArray && this.basketArray.length > 0){
+      this.basketArray.forEach(elem => {
+        if(elem.amount >= 1){
+          sum += (elem.price*elem.amount)
+        }
+      })
+    }
+    return sum;
+  }
+
+  addProd(index){
+    this.basketArray[index].amount += 1;
+  }
+
+  delProd(index){
+    if(this.basketArray[index].amount >= 1) this.basketArray[index].amount -= 1;
+  }
+  destroyProd(index){
+    this.basketArray.splice(index, 1)
+  }
+
 }

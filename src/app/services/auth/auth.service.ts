@@ -77,7 +77,15 @@ export class AuthService {
 
   private invalidateSession(){
     this.clearToken();
-    // this.router.navigate(['/login']);
+  }
+
+  public getUser(){
+    const params = new HttpParams();
+    const headers = {
+      'Content-Type':'application/x-www-form-urlencoded',
+      'Authorization': 'Bearer '+ this.getToken() + ''
+    };
+    return this.http.post(environment.apiUrl + 'auth',params.toString(),{headers})
   }
 
 }

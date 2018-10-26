@@ -19,7 +19,6 @@ export class PaginatorComponent implements OnInit, OnDestroy {
 
   constructor( private paginationService: PaginationService) {
       this.paramsStream = paginationService.paginationData.subscribe(e => {
-        // console.log(e);
         if(e){
           this.filters = true;
           this.data = e;

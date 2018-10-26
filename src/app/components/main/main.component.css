@@ -49,6 +49,7 @@ main{
   background-color: #45acc8;
   height: 42px;
   padding-top: 4px;
+  text-align: center;
 }
 
 :host >>> app-menu.sub-menu .container{
@@ -102,4 +103,46 @@ main{
 .menu2>li, .menu3>li, .menu4>li, .menu5>li{
   border-bottom: 1px solid black;
 }
+strong{
+  font-family: 'Montserrat', sans-serif;
+}
+.logo{
+  width: 80px;
+  height: 20px;
+  background: #94d7e9;
+  border-radius: 25%;
+  text-align: center;
+  line-height: 20px;
+  margin-left: 50px;
+  display: none;
+}
+.logo > a{
+  font-family: 'Montserrat', sans-serif;
+}
+.headerHidden{
+  display: none;
+}
+.flashMessage
+{
+  position: fixed;
+  background-color: #d4db65;
+  top: 40px;
+  right: 40px;
+  z-index: 1;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-family: 'Montserrat', sans-serif;
+  color: #337ab7;
+  animation: fadeOut 2s;
+}
 
+@keyframes fadeOut {
+  from{
+    transform: translateY(0px);
+    opacity: 1;
+  }
+  to{
+    transform: translateY(-100px);
+    opacity: 0;
+  }
+}

@@ -1,6 +1,5 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 
-import {Router} from "@angular/router";
 import {AuthService} from "../../services/auth/auth.service";
 
 @Component({
@@ -25,9 +24,11 @@ export class AuthComponent implements OnInit {
     password_confirmation: ""
 
   };
-  constructor(private auth: AuthService, private router: Router) { }
+  constructor(private auth: AuthService) { }
+  @Input('nav') nav;
 
   ngOnInit() {
+
   }
 
   onRegister() {
@@ -54,10 +55,11 @@ export class AuthComponent implements OnInit {
     })
   }
 
-  onLogin() {
+  onLogin(nav) {
+    if(!nav) nav = '/';
     this.auth.login(this.formData.email,this.formData.password).subscribe(e=>{
       if(e['token']){
-        this.router.navigate(['/']);
+        // this.router.navigate([nav]);
         this.authorize.emit(true);
         this.closeWindow();
       }

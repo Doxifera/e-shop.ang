@@ -18,8 +18,8 @@
       </ul>
     </div>
     <div class="login">
-      <button class="m-btn" *ngIf="authorized" (click)="onLogout()">Выйти</button>
-      <button  class="m-btn" *ngIf="!authorized" (click)="openAuth()">Войти</button>
+      <button class="m-btn" *ngIf="request && authorized" (click)="onLogout()"><i class="fas fa-sign-out-alt"></i> Выйти</button>
+      <button  class="m-btn" *ngIf="request &&  !authorized" (click)="openAuth()"><i class="fas fa-sign-in-alt"></i> Войти</button>
     </div>
   </div>
   <app-auth (close)="authOpen = false" (authorize)="authorized = true" *ngIf="authOpen"></app-auth>

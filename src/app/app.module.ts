@@ -50,6 +50,12 @@ import {Ng2SimplePageScrollModule} from "ng2-simple-page-scroll";
 import { CategoryPageComponent } from './components/main/category-page/category-page.component';
 import { GoodsPageComponent } from './components/main/goods-page/goods-page.component';
 import { BasketIconComponent } from './components/basket-icon/basket-icon.component';
+import { OrdersEditComponent } from './components/admin/orders-edit/orders-edit.component';
+import { SuccessPageComponent } from './components/success-page/success-page.component';
+import { SearchResultComponent } from './components/search-result/search-result.component';
+import { RaitingComponent } from './components/raiting/raiting.component';
+import { ComparingComponent } from './components/comparing/comparing.component';
+import { ComparingIconComponent } from './components/comparing-icon/comparing-icon.component';
 
 
 const adminSubroutes: Routes = [
@@ -72,20 +78,20 @@ const mainSubroutes: Routes = [
   {path: 'product/:id', component: ProductMainComponent},
   {path: 'category/:id', component: CategoryPageComponent},
   {path: 'goods/:category', component: GoodsPageComponent},
+  {path: 'search/:value', component: SearchResultComponent},
+  {path: 'comparing/:category', component: ComparingComponent},
 
 ];
 const masterSubroutes: Routes = [
   {path: '', component: MainComponent, children: mainSubroutes},
-
-
-
 ];
 
 const routes: Routes = [
   {path: '', component: MasterComponent, children: masterSubroutes},
   {path: 'ordering', component: OrderingComponent},
+  {path: 'success/:id', component: SuccessPageComponent},
   {path: 'admin/login', component: AdminLoginComponent},
-
+  {path: '404', component: PageNotFoundComponent},
 
   {path: 'admin', component: AdminComponent,canActivate: [AdminGuardService], children: adminSubroutes},
   {path: '**', component: PageNotFoundComponent},
@@ -139,6 +145,12 @@ const routes: Routes = [
     CategoryPageComponent,
     GoodsPageComponent,
     BasketIconComponent,
+    OrdersEditComponent,
+    SuccessPageComponent,
+    SearchResultComponent,
+    RaitingComponent,
+    ComparingComponent,
+    ComparingIconComponent,
 
 
 

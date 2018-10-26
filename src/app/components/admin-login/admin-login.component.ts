@@ -8,7 +8,7 @@ import {Router} from "@angular/router";
   styleUrls: ['./admin-login.component.css']
 })
 export class AdminLoginComponent implements OnInit {
-  public authErrors = {};
+  public authErrors = null;
   public formData = {
     email: "",
     password: ""

@@ -2,7 +2,7 @@
   <ul *ngIf="data.last !== 1">
     <a *ngIf="data.previous" href="#"
        [routerLink]="[{order:data.order,direction: data.direction,page: data.previous}]"><li>
-      <
+      <i class="fas fa-arrow-left"></i>
     </li></a>
     <a *ngIf="data.current > 1" href="#"
        [routerLink]="[{order:data.order,direction: data.direction,page: 1}]"><li>
@@ -19,7 +19,7 @@
     </li></a>
     <a *ngIf="data.next" href="#"
        [routerLink]="[{order:data.order,direction: data.direction,page: data.next}]"><li>
-      >
+      <i class="fas fa-arrow-right"></i>
     </li></a>
   </ul>
 </ng-container>
@@ -28,7 +28,7 @@
   <ul *ngIf="data.last !== 1">
     <a *ngIf="data.previous" href="#"
        [routerLink]="[previousData]"><li>
-      <
+      <i class="fas fa-arrow-left"></i>
     </li></a>
     <a *ngIf="data.current > 1" href="#"
        [routerLink]="[firstData]"><li>
@@ -45,7 +45,7 @@
     </li></a>
     <a *ngIf="data.next" href="#"
        [routerLink]="[nextData]"><li>
-      >
+      <i class="fas fa-arrow-right"></i>
     </li></a>
   </ul>
 </ng-container>

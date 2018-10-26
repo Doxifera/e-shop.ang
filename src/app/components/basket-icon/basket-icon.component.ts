@@ -13,9 +13,9 @@ export class BasketIconComponent implements OnInit, OnDestroy {
   basketArray = [];
 
   constructor(private basketService: BasketService) {
+    this.basketArray = basketService.getProducts();
     this.basket = basketService.storageStream.subscribe(e => {
-      console.log(e);
-      // this.basketArray.push(new Product(e['id'],e['name'],e['price'],e['image'],1))
+      this.basketArray = e;
     })
   }
 
@@ -25,7 +25,12 @@ export class BasketIconComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.basket.unsubscribe();
   }
-  test(){
-    console.log(this.basketArray);
+
+  countProducts(){
+    let sum = 0;
+    this.basketArray.forEach(elem => {
+      sum += elem.amount;
+    });
+    return sum;
   }
 }

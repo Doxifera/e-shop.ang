@@ -1,12 +1,12 @@
 <div class="container" (click)="closeWindow()">
   <div class="form" (click)="$event.stopPropagation()">
     <div class="nav">
-      <button (click)="currentForm = 'login'">Вход</button>
-      <button (click)="currentForm = 'register'">Регистрация</button>
-      <button (click)="currentForm = 'recovery'">Забыли пароль?</button>
-      <button (click)="closeWindow()">X</button>
+      <button class="btn-nav" (click)="currentForm = 'login'" [class.active]="currentForm === 'login'">Вход</button>
+      <button class="btn-nav"(click)="currentForm = 'register'" [class.active]="currentForm === 'register'">Регистрация</button>
+      <!--<button (click)="currentForm = 'recovery'">Забыли пароль?</button>-->
+      <button class="close" (click)="closeWindow()"><i class="fas fa-times"></i></button>
     </div>
-    <form action="#" name="login" *ngIf="currentForm === 'login'">
+    <form action="#" name="login" class="login" *ngIf="currentForm === 'login'">
       <label for="email_login">Электронная почта</label>
       <input type="email" name="email" id="email_login" [(ngModel)]="formData.email">
       <p *ngIf="this.authErrors.email">{{ this.authErrors.email}}</p>
@@ -17,10 +17,10 @@
 
       <p *ngIf="this.authErrors.error">{{ this.authErrors.error}}</p>
 
-      <input type="submit" value="Войти" (click)="onLogin()">
+      <input type="submit" value="Войти" (click)="onLogin(nav ? nav : '/')">
     </form>
 
-    <form action="#" name="register" *ngIf="currentForm === 'register'">
+    <form action="#" name="register" class="register" *ngIf="currentForm === 'register'">
       <label for="surname_register">Фамилия</label>
       <input type="text" name="surname" id="surname_register" [(ngModel)]="formData.surname">
       <p *ngIf="this.authErrors.surname">{{ this.authErrors.surname}}</p>
@@ -53,11 +53,11 @@
       <input type="submit" value="Войти" (click)="onRegister()">
     </form>
 
-    <form action="#" name="password_recovery" *ngIf="currentForm === 'recovery'">
-      <span>Для восстановления пароля введите свой e-mail, который вы указали при регистрации</span>
-      <label for="email_password_recovery">Электронная почта</label>
-      <input type="email" name="email" id="email_password_recovery" [(ngModel)]="formData.email">
-      <input type="submit" value="Восстановить">
-    </form>
+    <!--<form action="#" name="password_recovery" *ngIf="currentForm === 'recovery'">-->
+      <!--<span>Для восстановления пароля введите свой e-mail, который вы указали при регистрации</span>-->
+      <!--<label for="email_password_recovery">Электронная почта</label>-->
+      <!--<input type="email" name="email" id="email_password_recovery" [(ngModel)]="formData.email">-->
+      <!--<input type="submit" value="Восстановить">-->
+    <!--</form>-->
   </div>
 </div>

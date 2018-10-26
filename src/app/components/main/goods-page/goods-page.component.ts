@@ -1,10 +1,13 @@
 import {AfterViewInit, Component, ElementRef, OnInit, ViewChildren} from '@angular/core';
-import {ActivatedRoute, Params} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {ProductService} from "../../../services/product/product.service";
 import {DomSanitizer} from "@angular/platform-browser";
 import {AttributeService} from "../../../services/attribute/attribute.service";
 import {CategoryService} from "../../../services/category/category.service";
 import {PaginationService} from "../../../services/pagination/pagination.service";
+import {BasketService} from "../../../services/basket/basket.service";
+import {CompareService} from "../../../services/compare/compare.service";
+import {FlashService} from "../../../services/flash/flash.service";
 
 class Attribute{
   name;
@@ -27,7 +30,7 @@ class Attribute{
 })
 export class GoodsPageComponent implements OnInit, AfterViewInit {
   @ViewChildren('checkboxes') checkboxes;
-  paginationStream = null;
+
   categoryName = null;
   productsArray = null;
   additionalBlocks = null;
@@ -54,12 +57,16 @@ export class GoodsPageComponent implements OnInit, AfterViewInit {
   ];
 
   paginationData = null;
-
+  popup = false;
+  popupCords = null;
 
   constructor(private aR: ActivatedRoute, private products: ProductService, private sanitizer: DomSanitizer,
               private attributeService: AttributeService, private categoryService: CategoryService,
-              private elref: ElementRef, private paginationService: PaginationService) {
+              private elref: ElementRef, private paginationService: PaginationService, private flashService: FlashService,
+              private basketService: BasketService, private compareService: CompareService, private router: Router) {
     aR.params.subscribe(e => {
+      this.popup = false;
+      this.popupCords = null;
       this.categoryName = aR.snapshot.params['category'];
       if(e['page']){
         let tmpParams = {};
@@ -143,18 +150,14 @@ export class GoodsPageComponent implements OnInit, AfterViewInit {
             this.minPrice = e['rangePrice'].minPrice;
             this.maxPrice = e['rangePrice'].maxPrice;
           }
+          // if(e['rangePrice']){
+          //   this.minPrice = e['rangePrice'].minPrice;
+          //   this.maxPrice = e['rangePrice'].maxPrice;
+          // }
           if(e['prod']['data'].length % 3 > 0){
             let addedBlocks = e['prod']['data'].length % 3 === 2 ? 1 : 2;
             this.additionalBlocks = new Array(addedBlocks);
           }
-          // this.paginationData = {
-          //   current: e['prod'].current_page,
-          //   last: e['prod'].last_page,
-          //   previous: e['prod'].prev_page_url ? e['prod'].prev_page_url.split('=')[1] : e['prod'].prev_page_url,
-          //   next: e['prod'].next_page_url ? e['prod'].next_page_url.split('=')[1] : e['prod'].next_page_url,
-          //   order: this.params.order,
-          //   direction: this.params.direction
-          // }
           let tmpPaginationData = {};
           for(let key in this.params){
             if(key !== 'page'){
@@ -198,28 +201,51 @@ export class GoodsPageComponent implements OnInit, AfterViewInit {
   }
 
   getAttributes(id){
-      this.attributeArray = null;
-      this.valueArray = [];
-      this.attributeService.allFromCategory(id).subscribe(e => {
-        if(e[0].id){
+    this.attributeArray = null;
+    this.valueArray = [];
+    let tmpCatAttrs = null;
+    this.attributeService.allFromCategory(id).subscribe(e => {
+      if(e['category'] && e['category'].children.length < 1 && e['category'].attributes.length > 0 ){
+        if(e['attr'][0].id){
           let arr = [];
-          e[0]['attributes'].forEach(elem => {
+          e['attr'][0]['attributes'].forEach(elem => {
             arr.push(elem.name)
           });
           this.attributeArray = arr;
 
           let valArray = [];
-          for (let i =0;i<e[0]['attributes'].length;i++){
-            valArray.push(new Attribute(e[0]['attributes'][i].name, "",e[0]['attributes'][i].id,""));
+          for (let i =0;i < e['attr'][0]['attributes'].length;i++){
+            valArray.push(new Attribute(e['attr'][0]['attributes'][i].name, "",e['attr'][0]['attributes'][i].id,""));
           }
           this.valueArray = valArray;
 
 
-        }else{
-          this.valueArray = this.uniqValues(e);
-          this.attributeArray = this.uniqAttr(e);
         }
-      })
+        else{
+          let tmpAttrsArray = [];
+          e['category']['attributes'].forEach(elem => {
+            tmpAttrsArray.push(elem.name);
+          });
+          let tmpAttrs = [];
+          tmpAttrsArray.forEach(elem => {
+            if(tmpAttrs.indexOf(elem) === -1) {
+              tmpAttrs.push(elem)
+            }
+          });
+          let tmpUniqAttrs =  this.uniqAttr(e['attr']);
+          tmpUniqAttrs.forEach(elem => {
+            if(tmpAttrs.indexOf(elem) === -1) {
+              tmpAttrs.push(elem)
+            }
+          });
+          this.valueArray = this.uniqValues(e['attr']);
+          this.attributeArray = tmpAttrs;
+        }
+      }
+      else{
+        this.router.navigateByUrl("/");
+      }
+    })
   }
 
   uniqValues (values){
@@ -243,6 +269,14 @@ export class GoodsPageComponent implements OnInit, AfterViewInit {
   }
 
   filtering(attribute){
+    this.popup = true;
+    this.popupCords = {
+      top: (Math.round(
+        attribute.getBoundingClientRect().top + (
+        (attribute.getBoundingClientRect().bottom- attribute.getBoundingClientRect().top) / 2)
+      ) - 16 ) + pageYOffset,
+      left: attribute.nextElementSibling.offsetLeft + 10
+    };
     this.params.page = 1;
       if(attribute.checked){
         if(attribute.name in this.params){
@@ -268,12 +302,48 @@ export class GoodsPageComponent implements OnInit, AfterViewInit {
       }
   }
 
-  cancelRangePrice(){
+  cancelRangePrice(elem){
     this.params.priceMin = 0;
     this.params.priceMax = 0;
+    this.changePrice(elem);
   }
 
-  test(){
-    console.log(this.paginationData)
+  buy(prod){
+    this.basketService.addProduct(prod);
+    this.basketService.bayed.next(true);
   }
+  compare(prod){
+    this.products.show(prod.id).subscribe(e => {
+      if(e['id']){
+        this.flashService.flashMessage.next("товар добавлен в сравнение");
+        this.compareService.addProduct(e);
+      }
+      else{
+        this.errors = e['error']
+      }
+    });
+  }
+  changePrice(elem){
+    this.popup = true;
+    this.popupCords = {
+      top: (Math.round(
+        this.findAncestor(elem).getBoundingClientRect().top + (
+        (this.findAncestor(elem).getBoundingClientRect().bottom- this.findAncestor(elem).getBoundingClientRect().top) / 2)
+      ) - 16 ) + pageYOffset,
+      left: this.findAncestor(elem).offsetLeft + this.findAncestor(elem).clientWidth
+    };
+  }
+
+  findAncestor (el) {
+    while ((el = el.parentElement) && !el.classList.contains('priceRange'));
+    return el;
+  }
+
+  // changePriceMin(value){
+  //   this.minPrice = value;
+  // }
+  // changePriceMax(value){
+  //   this.maxPrice = value;
+  // }
+
 }

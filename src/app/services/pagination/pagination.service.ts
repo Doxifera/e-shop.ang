@@ -10,13 +10,4 @@ export class PaginationService {
 
   paginationData = new Subject();
 
-  // onSearch(value){
-  //   this.search.next(value)
-  // }
-  //
-  // consoleSearch = this.search.pipe(debounce( ()=> timer(1000) )).subscribe(e => {
-  //   this.categories.all().subscribe(e => {
-  //     console.log(e);
-  //   })
-  // });
 }

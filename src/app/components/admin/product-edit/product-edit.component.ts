@@ -137,19 +137,61 @@ export class ProductEditComponent implements OnInit, AfterViewInit {
     this.editing.emit(false);
   }
 
+  // getAttributes(){
+  //   this.attributeArray = null;
+  //   this.valueArray = [];
+  //   this.attributeService.allFromCategory(this.addForm.category).subscribe(e => {
+  //     if(e[0].id){
+  //       let arr = [];
+  //       e[0]['attributes'].forEach(elem => {
+  //         arr.push(elem.name)
+  //       });
+  //       this.attributeArray = arr;
+  //     }else{
+  //       this.valueArray = this.uniqValues(e);
+  //       this.attributeArray = this.uniqAttr(e);
+  //     }
+  //   })
+  // }
+
   getAttributes(){
     this.attributeArray = null;
     this.valueArray = [];
+    let tmpCatAttrs = null;
     this.attributeService.allFromCategory(this.addForm.category).subscribe(e => {
-      if(e[0].id){
+      if(e['attr'][0].id){
         let arr = [];
-        e[0]['attributes'].forEach(elem => {
+        e['attr'][0]['attributes'].forEach(elem => {
           arr.push(elem.name)
         });
         this.attributeArray = arr;
+
+        let valArray = [];
+        for (let i =0;i<e[0]['attributes'].length;i++){
+          valArray.push(new Attribute(e['attr'][0]['attributes'][i].name, "",e['attr'][0]['attributes'][i].id,""));
+        }
+        this.valueArray = valArray;
+
+
       }else{
-        this.valueArray = this.uniqValues(e);
-        this.attributeArray = this.uniqAttr(e);
+        let tmpAttrsArray = [];
+        e['category']['attributes'].forEach(elem => {
+          tmpAttrsArray.push(elem.name);
+        });
+        let tmpAttrs = [];
+        tmpAttrsArray.forEach(elem => {
+          if(tmpAttrs.indexOf(elem) === -1) {
+            tmpAttrs.push(elem)
+          }
+        });
+        let tmpUniqAttrs =  this.uniqAttr(e['attr']);
+        tmpUniqAttrs.forEach(elem => {
+          if(tmpAttrs.indexOf(elem) === -1) {
+            tmpAttrs.push(elem)
+          }
+        });
+        this.valueArray = this.uniqValues(e['attr']);
+        this.attributeArray = tmpAttrs;
       }
     })
   }

@@ -1,6 +1,9 @@
 label, input{
   display: block;
 }
+input{
+  padding: 5px;
+}
 .container{
   position: fixed;
   top: 0;
@@ -9,13 +12,17 @@ label, input{
   right: 0;
   background: rgba(117, 128, 118, 0.6);
   z-index: 100;
+
 }
 .form{
   width: 400px;
-  background: #d4db65;
+  background: #5fc4e0;
   margin: 50px auto;
   padding: 20px;
-
+  position: relative;
+  padding-top: 30px;
+  border-bottom-left-radius: 20px;
+  animation: fadeIn 0.5s;
 }
 .container p{
   background: red;
@@ -24,4 +31,54 @@ label, input{
 .nav{
   display: flex;
   justify-content: space-around;
+
+}
+.nav{
+
+}
+.close{
+  position: absolute;
+  right: -15px;
+  top: -15px;
+  padding: 5px 8px;
+}
+.btn-nav{
+  flex: 1;
+  padding: 5px;
+}
+.active{
+  background-color: white;
+  font-family: 'Montserrat', sans-serif;
+}
+label{
+  font-family: 'Open Sans', sans-serif;
+  color: black;
+}
+
+.register{
+  text-align: right;
+}
+.register input{
+  text-align: right;
+  display: inline-block;
+}
+.register input:last-child, .login input:last-child{
+  display: block;
+  font-family: 'Montserrat', sans-serif;
+  padding: 5px;
+  background-color: white;
+  margin: 10px auto;
+}
+form{
+  padding-top: 10px;
+}
+@keyframes fadeIn {
+  from{
+    transform: translateY(-100px);
+    opacity: 0;
+  }
+  to{
+    transform: translateY(0px);
+    opacity: 1;
+  }
 }

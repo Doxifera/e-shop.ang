@@ -1,8 +1,15 @@
 <main >
+  <div *ngIf="flashContainer" class="flashMessage">{{flashContainer}}</div>
+  <div class="headerHidden"></div>
   <div class="header">
     <div class="block">
     <div class="menu" (mouseenter)="menu = true">
-      <p class="first"><span><div></div><div></div><div></div></span>Каталог товаров</p>
+      <p class="first"><span><div></div><div></div><div></div></span><strong>Каталог товаров</strong>
+      <i class="logo">
+        <a href="#" routerLink="/">LOGO
+        </a>
+      </i>
+      </p>
       <ul class="sub-menu">
         <ng-container *ngIf="categoriesArray">
           <ng-container *ngFor="let menu1 of categoriesArray">
@@ -52,10 +59,9 @@
       <app-search></app-search>
     </div>
     <div class="compare">
-      <button class="m-btn" >Сравнение</button>
+      <app-comparing-icon></app-comparing-icon>
     </div>
     <div class="basket">
-      <!--<button class="m-btn" (click)="basketOpen = true">Корзина</button>-->
       <app-basket-icon (click)="basketOpen = true"></app-basket-icon>
     </div>
     </div>

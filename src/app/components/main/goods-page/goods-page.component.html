@@ -3,24 +3,43 @@
     <ul class="attr">
       <div class="priceRange">
         <div class="priceInputs">
-          <input type="number" name="priceMin" [(ngModel)]="params.priceMin">
-          <span (click)="cancelRangePrice()">X</span>
-          <input type="number" name="priceMax" [(ngModel)]="params.priceMax">
+          <input type="number" name="priceMin" [(ngModel)]="params.priceMin" (change)="changePrice($event.target)">
+          <span (click)="cancelRangePrice($event.target)">X</span>
+          <input type="number" name="priceMax" [(ngModel)]="params.priceMax" (change)="changePrice($event.target)">
         </div>
         <div class="priceRanges">
           <div>
             <span class="minRange">MIN</span>
             <input type="range" name="rangeMin"
-                   min="{{minPrice}}" max="{{params.priceMax}}" step="10"
-                   [(ngModel)]="params.priceMin">
+                   min="{{minPrice}}" max="{{params.priceMax}}" step="1"
+                   [(ngModel)]="params.priceMin" (change)="changePrice($event.target)">
           </div>
           <div>
             <input type="range" name="rangeMax"
-                   min="{{params.priceMin}}" max="{{maxPrice}}" step="10"
-                   [(ngModel)]="params.priceMax">
+                   min="{{params.priceMin}}" max="{{maxPrice}}" step="1"
+                   [(ngModel)]="params.priceMax" (change)="changePrice($event.target)">
             <span class="maxRange">MAX</span>
           </div>
         </div>
+        <!--<div class="priceInputs">-->
+          <!--<input type="number" name="priceMin" [(ngModel)]="minPrice">-->
+          <!--<span (click)="cancelRangePrice()">X</span>-->
+          <!--<input type="number" name="priceMax" [(ngModel)]="maxPrice">-->
+        <!--</div>-->
+        <!--<div class="priceRanges">-->
+          <!--<div>-->
+            <!--<span class="minRange">MIN</span>-->
+            <!--<input type="range" name="rangeMin"-->
+                   <!--min="{{minPrice}}" max="{{maxPrice}}" step="1"-->
+                   <!--[(ngModel)]="minPrice">-->
+          <!--</div>-->
+          <!--<div>-->
+            <!--<input type="range" name="rangeMax"-->
+                   <!--min="{{minPrice}}" max="{{maxPrice}}" step="1"-->
+                   <!--[(ngModel)]="maxPrice">-->
+            <!--<span class="maxRange">MAX</span>-->
+          <!--</div>-->
+        <!--</div>-->
         <div class="range"></div>
       </div>
       <ng-container *ngFor="let attr of attributeArray">
@@ -32,19 +51,27 @@
                   <input type="checkbox" name="{{attr}}" value="{{value.value}}" (change)="filtering($event.target)"
                          [attr.data-attribute-id]="value.Attribute_id" [attr.data-value-id]="value.Value_id"
                   class="checkbox">
-                  {{value.value}}
+                  <ng-container *ngIf="value.value === 'true'">есть</ng-container>
+                  <ng-container *ngIf="value.value !== 'true'">{{value.value}}</ng-container>
+                  <span class="target-span"></span>
                 </li>
               </ng-container>
             </ng-container>
           </ul>
         </li>
       </ng-container>
+      <div class="popup" *ngIf="popup && popupCords"
+           [style.top]="popupCords.top + 'px'" [style.left]="popupCords.left + 'px'">
+        <div class="popupArrow"></div>
+        <a href="#" [routerLink]="[params]">Применить</a>
+      </div>
     </ul>
     <div class="attrButtons">
       <a href="#" [routerLink]="[params]">Применить</a>
       <a href="#" [routerLink]="['/goods',categoryName]">Сбросить</a>
     </div>
   </div>
+
   <div class="products">
     <div class="header">
       <h1>{{categoryName}}</h1>
@@ -59,8 +86,12 @@
         <div class="card">
           <a href="#" [routerLink]="['/product',prod.id]" class="title">{{prod.name}}</a>
           <div class="activity">
-            <div class="raiting"></div>
-            <div class="comments"></div>
+            <div class="comments">
+              <span>Код товара: <span>{{prod.id}}</span></span>
+            </div>
+            <div class="raiting">
+              <app-raiting [kind]="'passive'" [rait]="prod.raiting"></app-raiting>
+            </div>
           </div>
           <div class="img" [style.background-image]="makeUrl(prod.image)"></div>
           <p *ngIf="prod.amount > 10" class="amountHigh">Есть в наличии</p>
@@ -68,8 +99,9 @@
           <p *ngIf="prod.amount <= 0" class="amountNo">Нет в наличии</p>
           <div class="interaction">
             <span class="price"><span>{{prod.price}}</span> грн</span>
-            <button>C</button>
-            <button>B</button>
+            <button (click)="compare(prod)"><i class="fas fa-balance-scale"></i></button>
+            <button *ngIf="prod.amount > 0" (click)="buy(prod)"><i class="fas fa-shopping-basket"></i></button>
+            <button *ngIf="prod.amount < 1"><i class="fa fa-envelope" aria-hidden="true"></i></button>
           </div>
         </div>
       </div>

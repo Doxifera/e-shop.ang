@@ -4,11 +4,11 @@
     <ul>
       <a simplePageScroll href="#description"><li>Описание ▼</li></a>
       <a simplePageScroll href="#characteristics"><li>Характеристики ▼</li></a>
-      <a simplePageScroll href="#reviews"><li>Отзывы ▼</li></a>
+      <a simplePageScroll href="#reviews"><li>Отзывы (<span class="revLen">{{product.reviews.length}}</span>)▼</li></a>
     </ul>
     <div>
       <span>Код товара: <span>{{product.id}}</span></span>
-      <div class="raiting"></div>
+      <app-raiting  [rait]="product.raiting" [kind]="'passive'"></app-raiting>
     </div>
   </div>
   <div class="blocks">
@@ -19,10 +19,10 @@
       <p>Есть в наличии</p>
       <div class="price">
         <span><span>{{product.price}}</span>грн</span>
-        <button (click)="test(product)">Купить</button>
+        <button (click)="buy(product)">Купить</button>
       </div>
       <div class="compare">
-        <button>Compare</button>
+        <button (click)="compare(product)"><i class="fas fa-balance-scale"></i></button>
         <span>К сравнению</span>
       </div>
       <div class="delivery">
@@ -30,7 +30,7 @@
       </div>
     </div>
   </div>
-  <h2 id="characteristics">Характеристики <span>ОЗУ Kingston DDR3 4GB (2x2GB) 1600MHz HyperX FURY (KHX1600C9D3K2/4G)</span></h2>
+  <h2 id="characteristics" *ngIf="product">Характеристики <span>{{product.name}}</span></h2>
   <table *ngIf="attributes" class="attributes">
     <tr *ngFor="let attr of attributes">
       <td>{{attr.name}}</td>
@@ -47,8 +47,36 @@
       <td class="no">нет</td>
     </tr>
   </table>
-  <h2 id="description">Описание <span>ОЗУ Kingston DDR3 4GB (2x2GB) 1600MHz HyperX FURY (KHX1600C9D3K2/4G)</span></h2>
+  <h2 id="description" *ngIf="product">Описание <span>{{product.name}}</span></h2>
   <div *ngIf="product" class="description" [innerHTML]="product.description.text"></div>
-  <h2 id="reviews">Отзывы <span>ОЗУ Kingston DDR3 4GB (2x2GB) 1600MHz HyperX FURY (KHX1600C9D3K2/4G)</span></h2>
+  <h2 id="reviews" *ngIf="product">Отзывы <span>{{product.name}}</span></h2>
+  <button class="leave-comment" (click)="leaveComment()"><i class="fas fa-edit"></i> Оставить отзыв</button>
+  <p *ngIf="leavingComment">Необходимо зарегестрироватся или войти</p>
+  <form class="form-comment" action="#" *ngIf="authorized" (submit)="onSubmit()">
+    <div class="setRaiting">
+      <p>Оцените товар</p>
+      <app-raiting  [rait]="product.raiting" [kind]="'active'" (setRaiting)="setRaiting = $event"></app-raiting>
+    </div>
+    <textarea name="text"  rows="6" class="comment" [(ngModel)]="comment"></textarea><br>
+    <button class="leave-comment"><i class="fas fa-upload"></i> Опубликовать</button>
+  </form>
+  <div class="error" *ngIf="errors">
+    <p>{{errors.error}}</p>
+  </div>
+  <ul class="review" *ngIf="product && product.reviews.length > 0">
+    <li *ngFor="let rev of product.reviews" class="review-block">
+      <div class="review-img"></div>
+      <div class="review-content">
+        <p class="review-title">
+          <span class="rev-name">{{rev.name}}</span>
+          <span class="rev-raiting">
+            <app-raiting  [rait]="rev.value" [kind]="'passive'"></app-raiting>
+          </span>
+          <span class="rev-date">{{rev.created_at}}</span>
+        </p>
+        <p class="review-body">{{rev.text}}</p>
+      </div>
+    </li>
+  </ul>
 </div>
 

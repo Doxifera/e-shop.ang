@@ -1,66 +1,69 @@
-import {AfterContentInit, AfterViewInit, Component, ElementRef, OnInit, ViewChild, ViewChildren} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChildren} from '@angular/core';
 import {ProductService} from "../../../services/product/product.service";
 import {DomSanitizer} from "@angular/platform-browser";
 import {BasketService} from "../../../services/basket/basket.service";
+import {CompareService} from "../../../services/compare/compare.service";
+import {environment} from "../../../../environments/environment";
+import {FlashService} from "../../../services/flash/flash.service";
 
-class Product{
-  id;
-  name;
-  price;
-  image;
-  amount;
 
-  constructor(id: string, name: string, price: string, image: string, amount: number){
-    this.id = id;
-    this.name = name;
-    this.price = price;
-    this.image = image;
-    this.amount = amount;
-  }
-}
 
 @Component({
   selector: 'app-main-page',
   templateUrl: './main-page.component.html',
   styleUrls: ['./main-page.component.css']
 })
-export class MainPageComponent implements OnInit, AfterViewInit, AfterContentInit {
+export class MainPageComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('moverNew') moverNew;
 
   private mover: HTMLElement;
+
+  scrollBound = null;
   dataArray = [
     "dotted",
     [
-      "url('../../../assets/mainSlides/1.jpg')",
-      "url('../../../assets/mainSlides/2.jpg')",
-      "url('../../../assets/mainSlides/3.jpg')",
-      "url('../../../assets/mainSlides/4.jpg')",
-      "url('../../../assets/mainSlides/5.jpg')"
+      "url('../../../"+environment.distUrl+"assets/mainSlides/1.jpg')",
+      "url('../../../"+environment.distUrl+"assets/mainSlides/2.jpg')",
+      "url('../../../"+environment.distUrl+"assets/mainSlides/3.jpg')",
+      "url('../../../"+environment.distUrl+"assets/mainSlides/4.jpg')",
+      "url('../../../"+environment.distUrl+"assets/mainSlides/5.jpg')"
     ]
 
   ];
 
+  paralax = "url('../../../"+environment.distUrl+"assets/paralax.png')";
+
   newest = null;
 
   constructor(private products: ProductService, private elRef: ElementRef, private sanitizer: DomSanitizer,
-              private basketService: BasketService) {
+              private basketService: BasketService, private compareService: CompareService,
+              private flashService: FlashService) {
     products.all("?order=created_at&direction=DESC").subscribe(e => {
       if(e['prod']['data']) this.newest = e['prod']['data'];
-    })
+    });
+    if (!this.scrollBound) {
+      this.scrollBound = this.scrollHandler.bind(this);
+    }
+    window.addEventListener('scroll',this.scrollBound);
   }
 
   ngOnInit() {
   }
 
-  ngAfterContentInit(): void {
-
-  }
 
   ngAfterViewInit(): void {
 
     this.moverNew.changes.subscribe(e => {
       this.mover = this.elRef.nativeElement.querySelector('.mover-new');
     });
+  }
+
+  scrollHandler(){
+    let page = window.pageYOffset || document.documentElement.scrollTop;
+    let pax = this.elRef.nativeElement.querySelector('.paralax');
+    if(page <= 343){
+      pax.style.backgroundPositionY = -page + "px";
+    }
   }
 
   private timer = null;
@@ -98,8 +101,17 @@ export class MainPageComponent implements OnInit, AfterViewInit, AfterContentIni
     return this.sanitizer.bypassSecurityTrustStyle('url(' + url + ')');
   }
 
-  test(prod){
-    this.basketService.addProduct(new Product(prod.id,prod.name,prod.price,prod.image,1));
+  buy(prod){
+    this.basketService.addProduct(prod);
+    this.basketService.bayed.next(true);
   }
 
+  compare(prod){
+    this.compareService.addProduct(prod);
+    this.flashService.flashMessage.next("товар добавлен в сравнение");
+  }
+
+  ngOnDestroy(): void {
+    window.removeEventListener('scroll',this.scrollBound);
+  }
 }

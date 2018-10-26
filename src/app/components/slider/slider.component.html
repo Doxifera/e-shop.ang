@@ -6,7 +6,7 @@
       </div>
     </div>
     <div class="nav">
-      <div class="arrow arrow-left" (click)="slideLeft()"></div>
+      <button class="arrow arrow-left" (click)="slideLeft()"></button>
 
       <ng-container *ngIf="data[0] === 'dotted'">
         <div class="dots" *ngFor="let dot of slides;let i = index"
@@ -20,7 +20,7 @@
         ></div>
       </ng-container>
 
-      <div class="arrow arrow-right" (click)="slideRight()"></div>
+      <button class="arrow arrow-right" (click)="slideRight()"></button>
     </div>
   </div>
 </div>

@@ -4,5 +4,33 @@
       <p>Корзина :</p>
       <button (click)="closeWindow()">X</button>
     </div>
+    <ul *ngIf="basketArray && basketArray.length>0" class="list">
+      <li *ngFor="let prod of basketArray; let i = index">
+        <div class="view">
+          <div class="img" [style.background-image]="makeUrl(prod.image)"></div>
+          <div class="title">
+            <p>{{prod.name}}</p>
+            <div class="amount">
+              <button class="adding" (click)="delProd(i)">-</button>
+              <span class="adding">{{prod.amount}}</span>
+              <button class="adding" (click)="addProd(i)">+</button>
+              <span class="price">x {{prod.price}} грн</span>
+            </div>
+          </div>
+        </div>
+        <div class="interactions">
+          <p (click)="destroyProd(i)">X</p>
+          <p>{{prod.price}} грн</p>
+        </div>
+      </li>
+    </ul>
+    <p *ngIf="!basketArray || basketArray.length < 1">Корзина пуста</p>
+    <div class="footer">
+      <div class="counts">
+        <p>Количество: {{orderAmount()}}</p>
+        <p>Сумма заказа: <span>{{orderPrice()}}</span> грн</p>
+      </div>
+      <a *ngIf="basketArray && basketArray.length>0" href="#" routerLink="/ordering"> Оформить заказ</a>
+    </div>
   </div>
 </div>

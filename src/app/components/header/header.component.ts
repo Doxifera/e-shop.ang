@@ -10,9 +10,11 @@ export class HeaderComponent implements OnInit {
 
   authOpen = false;
   authorized = false;
+  request = false;
 
   constructor(private auth: AuthService) {
     auth.isAuth().subscribe(e=>{
+      this.request = true;
       this.authorized = e;
     });
   }

@@ -6,9 +6,13 @@ import {Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
   styleUrls: ['./master.component.css']
 })
 export class MasterComponent implements OnInit, OnDestroy {
+  scrollBound = null;
 
   constructor(private elRef: ElementRef) {
-    window.addEventListener('scroll',this.scrollHandler.bind(this));
+    if (!this.scrollBound) {
+      this.scrollBound = this.scrollHandler.bind(this);
+    }
+    window.addEventListener('scroll',this.scrollBound);
   }
 
   ngOnInit() {
@@ -26,7 +30,7 @@ export class MasterComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    window.removeEventListener('scroll',this.scrollHandler);
+    window.removeEventListener('scroll',this.scrollBound);
   }
 
 }

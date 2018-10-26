@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {CategoryService} from "../../../services/category/category.service";
 import {DomSanitizer} from "@angular/platform-browser";
 
@@ -12,7 +12,8 @@ export class CategoryPageComponent implements OnInit {
   category = null;
   categoryId = null;
 
-  constructor(private aR:ActivatedRoute, private categories: CategoryService, private sanitizer: DomSanitizer) {
+  constructor(private aR:ActivatedRoute, private categories: CategoryService, private sanitizer: DomSanitizer,
+              private router: Router) {
     aR.params.subscribe(e => {
       if(this.categoryId !== e){
         this.updateCategory(e['id']);
@@ -29,6 +30,7 @@ export class CategoryPageComponent implements OnInit {
   updateCategory(id){
     this.categories.show(id).subscribe(e => {
       if(e['id']){
+        if(e['children'].length < 1) this.router.navigate(['/goods',e['name']]);
         this.category = e;
       }
     })
